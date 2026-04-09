@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>House Party Jeopardy</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Futura', 'Trebuchet MS', sans-serif;
+    background: #FFFFFF;
+    color: #111111;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* HOME SCREEN */
+  #home {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    gap: 30px;
+    padding: 40px;
+  }
+
+  #home h1 {
+    font-size: 4rem;
+    text-transform: uppercase;
+    letter-spacing: 6px;
+    color: #EA526F;
+    text-shadow: none;
+  }
+
+  .team-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    width: 100%;
+    max-width: 600px;
+  }
+
+  .team-inputs label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #EA526F;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .team-inputs input {
+    font-family: 'Futura', 'Trebuchet MS', sans-serif;
+    font-size: 1.2rem;
+    padding: 14px 16px;
+    border: 2px solid #FCEADE;
+    border-radius: 6px;
+    background: #FCEADE;
+    color: #111111;
+    min-height: 48px;
+    outline: none;
+  }
+
+  .team-inputs input:focus {
+    border-color: #FF8A5B;
+  }
+
+  .home-buttons {
+    display: flex;
+    gap: 30px;
+    margin-top: 10px;
+  }
+
+  .home-btn {
+    font-family: 'Futura', 'Trebuchet MS', sans-serif;
+    font-size: 1.6rem;
+    padding: 20px 50px;
+    border: 3px solid #FF8A5B;
+    background: #FF8A5B;
+    color: #111111;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    transition: all 0.2s;
+    border-radius: 4px;
+    font-weight: 700;
+    min-height: 48px;
+  }
+
+  .home-btn:active {
+    background: #EA526F;
+    border-color: #EA526F;
+    color: #FFFFFF;
+  }
+
+  /* BOARD SCREEN */
+  #board-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    min-height: 100vh;
+  }
+
+  .board-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    margin-bottom: 20px;
+  }
+
+  .board-header h2 {
+    font-size: 2rem;
+    color: #EA526F;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .scores-link {
+    font-family: 'Futura', 'Trebuchet MS', sans-serif;
+    font-size: 0.85rem;
+    color: #999;
+    text-decoration: none;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 4px;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+  }
+
+  .scores-link:active {
+    color: #EA526F;
+  }
+
+  .back-btn {
+    font-family: 'Futura', 'Trebuchet MS', sans-serif;
+    font-size: 1rem;
+    padding: 12px 24px;
+    border: 2px solid #EA526F;
+    background: transparent;
+    color: #EA526F;
+    cursor: pointer;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    border-radius: 4px;
+    min-height: 48px;
+  }
+
+  .back-btn:active {
+    background: #EA526F;
+    color: #FFFFFF;
+  }
+
+  /* TURN INDICATOR */
+  .turn-indicator {
+    width: 100%;
+    max-width: 1200px;
+    text-align: center;
+    padding: 12px 0;
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #EA526F;
+    letter-spacing: 1px;
+  }
+
+  .turn-indicator span {
+    background: #FCEADE;
+    padding: 8px 20px;
+    border-radius: 20px;
+  }
+
+  /* JEOPARDY BOARD */
+  .board {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    width: 100%;
+    max-width: 1200px;
+  }
+
+  .category-header {
+    background: #EA526F;
+    padding: 18px 10px;
+    text-align: center;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #FFFFFF;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 70px;
+  }
+
+  .tile {
+    background: #FCEADE;
+    padding: 20px 10px;
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #111111;
+    cursor: pointer;
+    transition: all 0.15s;
+    border-radius: 4px;
+    user-select: none;
+    min-height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tile:active {
+    background: #FF8A5B;
+  }
+
+  .tile.visited {
+    background: #e0d8d2;
+    color: #999;
+    cursor: default;
+  }
+
+  .tile.visited:hover {
+    transform: none;
+    background: #e0d8d2;
+  }
+
+  /* QUESTION OVERLAY */
+  #overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #EA526F;
+    z-index: 100;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    transition: background 0.3s;
+    overflow-y: auto;
+  }
+
+  #overlay.active { display: flex; }
+
+  #overlay.answer-shown { background: #25CED1; }
+
+  /* Pass banner */
+  #pass-banner {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    padding: 14px 20px;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    background: rgba(0,0,0,0.15);
+    color: #FFFFFF;
+  }
+
+  #pass-banner.visible { display: block; }
+
+  #overlay .turn-label {
+    font-size: 1rem;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+
+  #overlay .category-label {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 10px;
+  }
+
+  #overlay .points-label {
+    font-size: 1.2rem;
+    color: #FFFFFF;
+    margin-bottom: 30px;
+    letter-spacing: 2px;
+  }
+
+  #overlay .question-text {
+    font-size: 2.4rem;
+    text-align: center;
+    max-width: 900px;
+    line-height: 1.4;
+    color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #overlay .question-text img {
+    max-width: 85vw;
+    max-height: 55vh;
+    object-fit: contain;
+    border-radius: 8px;
+    border: 4px solid #FFFFFF;
+    display: block;
+  }
+
+  #overlay .answer-text {
+    font-size: 2rem;
+    text-align: center;
+    max-width: 900px;
+    line-height: 1.4;
+    color: #111111;
+    margin-top: 30px;
+    display: none;
+  }
+
+  #overlay .answer-text.visible { display: block; }
+
+  /* Overlay button rows */
+  .overlay-button-row {
+    display: flex;
+    gap: 20px;
+    margin-top: 30px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .overlay-button-row.hidden { display: none; }
+
+  .overlay-btn {
+    font-family: 'Futura', 'Trebuchet MS', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    padding: 18px 40px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    min-height: 60px;
+    min-width: 180px;
+    transition: opacity 0.15s;
+    text-align: center;
+  }
+
+  .overlay-btn:active { opacity: 0.8; }
+
+  .btn-reveal {
+    background: #25CED1;
+    color: #111111;
+  }
+
+  .btn-pass {
+    background: rgba(255,255,255,0.25);
+    color: #FFFFFF;
+  }
+
+  .btn-correct {
+    background: #FF8A5B;
+    color: #111111;
+  }
+
+  .btn-wrong {
+    background: rgba(255,255,255,0.25);
+    color: #FFFFFF;
+  }
+
+  /* SCOREBOARD SCREEN */
+  #scoreboard-screen {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #FFFFFF;
+    z-index: 90;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    gap: 30px;
+  }
+
+  #scoreboard-screen.active { display: flex; }
+
+  #scoreboard-screen h2 {
+    font-size: 2.4rem;
+    color: #EA526F;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+  }
+
+  .score-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    width: 100%;
+    max-width: 700px;
+  }
+
+  .score-card {
+    background: #FCEADE;
+    border-radius: 10px;
+    padding: 28px 24px;
+    text-align: center;
+    transition: all 0.2s;
+  }
+
+  .score-card.current-turn {
+    background: #FF8A5B;
+    transform: scale(1.04);
+  }
+
+  .score-card .card-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #111111;
+    margin-bottom: 8px;
+  }
+
+  .score-card .card-score {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #EA526F;
+  }
+
+  .score-card.current-turn .card-score {
+    color: #111111;
+  }
+
+  .score-card .card-turn {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #111111;
+    margin-top: 6px;
+    visibility: hidden;
+  }
+
+  .score-card.current-turn .card-turn {
+    visibility: visible;
+  }
+
+  #scoreboard-back {
+    font-family: 'Futura', 'Trebuchet MS', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding: 16px 40px;
+    border: 2px solid #EA526F;
+    background: transparent;
+    color: #EA526F;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-radius: 4px;
+    min-height: 48px;
+    margin-top: 10px;
+  }
+
+  #scoreboard-back:active {
+    background: #EA526F;
+    color: #FFFFFF;
+  }
+</style>
+</head>
+<body>
+
+<!-- ============== QUESTION DATA ============== -->
+<script>
+const GAME_DATA = {
+  board1: {
+    "Shots from Movies": [
+      { points: 100, question: "Load image: American Beauty.jpg", answer: "American Beauty" },
+      { points: 200, question: "Load image: Whiplash.jpg", answer: "Whiplash" },
+      { points: 300, question: "Load image: Saawariya.jpg", answer: "Saawariya" },
+      { points: 400, question: "Load image: Gully Boy.jpg", answer: "Gully Boy" },
+      { points: 500, question: "Load image: Tumbbad.jpg", answer: "Tumbbad" },
+    ],
+    "Only Mumbai Geography": [
+      { points: 100, question: "This Bandra caf\u00e9 is known for its maze-like seating and desserts.", answer: "Candies", image: "Candies.jpg" },
+      { points: 200, question: "Not your regular shady bar in Bandra, you know at least one person who\u2019s thrown up outside this place.", answer: "Janta Bar" },
+      { points: 300, question: "This iconic single-screen cinema in South Mumbai is famous for Bollywood premieres.", answer: "Maratha Mandir" },
+      { points: 400, question: "The lines at this cafe are 4x longer than the time you\u2019ll spend actually eating their sandwiches.", answer: "Veronica\u2019s" },
+      { points: 500, question: "Which mall opened first? Infinity Andheri or Inorbit Malad?", answer: "Inorbit Malad" },
+    ],
+    "Actor Name Anagrams": [
+      { points: 100, question: "Merry wardrobe", answer: "Drew Barrymore" },
+      { points: 200, question: "Think in a jar", answer: "Rajnikanth" },
+      { points: 300, question: "You had crap", answer: "Uday Chopra" },
+      { points: 400, question: "Cool Energy Ego", answer: "George Clooney" },
+      { points: 500, question: "A girl can die", answer: "Daniel Craig" },
+    ],
+    "Jingles from Indian Ads": [
+      { points: 100, question: "You\u2019re my pumpkin pumpkin hello honey bunny", answer: "Idea" },
+      { points: 200, question: "Jab ghar ki raunak badhani ho, deewaron ko jab sajana ho", answer: "Nerolac" },
+      { points: 300, question: "Doodh hai wonderful, pee sakte hain roz glassful", answer: "Amul Doodh" },
+      { points: 400, question: "Umeed wali dhoop, sunshine wali aasha", answer: "Coca Cola" },
+      { points: 500, question: "Dha-dha-dhinda-kita-dha-dhinda-kita-taka-gadhi-gana", answer: "Ambuja Cement" },
+    ],
+    "Really Grimm Fairytales": [
+      { points: 100, question: "Mirror mirror on the wall, who\u2019s the fairest of them all", answer: "Snow White" },
+      { points: 200, question: "A wicked witch in an edible house tries to fatten up a boy so she can eat him", answer: "Hansel and Gretel" },
+      { points: 300, question: "Her step sisters cut off parts of their feet so they could squeeze into her slippers", answer: "Cinderella" },
+      { points: 400, question: "A mean old witch cut her hair so the prince could not climb it", answer: "Rapunzel" },
+      { points: 500, question: "She had to spin straw into gold or be killed, and in desperation promised a creepy little man her firstborn child as payment", answer: "Rumpelstiltskin" },
+    ],
+    "Masterchef": [
+      { points: 100, question: "A delicately spiced potato croquette, encased in a crisp chickpea batter, nestled within a pillowy pav and elevated with layers of dry garlic chutney and fried green chilli for textural contrast", answer: "Vada Pav" },
+      { points: 200, question: "A slow-simmered medley of vegetables, aggressively mashed into a rich, buttery gravy, finished with warming spices and served alongside cubic loaves that\u2019s been unapologetically saturated in butter", answer: "Pav Bhaji" },
+      { points: 300, question: "A golden, angular pastry filled with a robust mixture of spiced potatoes and peas, deep-fried to achieve a shattering exterior that gives way to a warm, aromatic core", answer: "Samosa" },
+      { points: 400, question: "Crisp-fried cauliflower florets lacquered in a glossy, umami-rich Indo-Chinese reduction, balancing sweetness, heat, and acidity with theatrical intensity", answer: "Gobi Manchurian" },
+      { points: 500, question: "Free-range eggs scrambled over high heat with green chillies, onions, and spices, finished with coriander and served with buttered pav for a rustic yet deeply satisfying experience", answer: "Anda Bhurji Pav" },
+    ],
+  },
+  board2: {
+    "TV Show Bedrooms": [
+      { points: 100, question: "Load image: Drake & Josh.jpg", answer: "Drake & Josh" },
+      { points: 200, question: "Load image: Friends, Monica's Room.jpg", answer: "Friends, Monica's Room" },
+      { points: 300, question: "Load image: Gilmore Girls, Rory.jpg", answer: "Gilmore Girls, Rory" },
+      { points: 400, question: "Load image: Powerpuff Girls.jpg", answer: "Powerpuff Girls" },
+      { points: 500, question: "Load image: Schitts Creek.jpg", answer: "Schitts Creek" },
+    ],
+    "Gen Z Terms": [
+      { points: 100, question: "This term is used when someone is being delusional but confident, often in a self-aware way", answer: "Delulu" },
+      { points: 200, question: "This phrase is used to call out something that feels suspicious, off, or just not right", answer: "Sus" },
+      { points: 300, question: "What you call someone who\u2019s embarrassingly out of touch \u2014 basically the opposite of cool", answer: "Cheugy" },
+      { points: 400, question: "What your coworker is doing when they do the absolute bare minimum and feel zero guilt about it", answer: "Quiet Quitting" },
+      { points: 500, question: "This term is used when someone suddenly loses interest or feels turned off for a very small reason", answer: "Ick" },
+    ],
+    "Ize on the Prize": [
+      { points: 100, question: "A burger, a jersey, a ringtone \u2014 all made more personal by doing this", answer: "Customize" },
+      { points: 200, question: "What a chef does to onions", answer: "Caramelize" },
+      { points: 300, question: "What world leaders do", answer: "Radicalize" },
+      { points: 400, question: "What a poet does to ordinary Tuesday traffic and grocery lists", answer: "Romanticize" },
+      { points: 500, question: "What a surprise rendition of Happy Birthday in a restaurant does to an introvert", answer: "Traumatize" },
+    ],
+    "Welcome": [
+      { points: 100, question: "With which weapon did Uday Shetty break one of his gunda\u2019s leg?", answer: "Hockey Stick" },
+      { points: 200, question: "Name 2 of Uday Shetty\u2019s fake businesses", answer: "Sanjana Airlines, Sanjana Textiles" },
+      { points: 300, question: "Who claims to have reached Lucky\u2019s funeral first?", answer: "Ghungroo Seth" },
+      { points: 400, question: "What is the final bidding amount of Majnu bhai\u2019s famous painting?", answer: "$50,000" },
+      { points: 500, question: "What is Ghungroo Seth\u2019s physical disability which leads to unintentional comic situations?", answer: "His neck turns to the side" },
+    ],
+    "Feline Things": [
+      { points: 100, question: "This viral internet cat became famous for looking permanently annoyed and unintentionally judging your life choices", answer: "Grumpy Cat" },
+      { points: 200, question: "She is at this party", answer: "Aishwarya Kat" },
+      { points: 300, question: "This blue robotic cat from the future carries gadgets in a four-dimensional pocket and basically raised an entire generation", answer: "Doraemon" },
+      { points: 400, question: "This Bollywood movie starring Salman Khan features a spy whose codename is a big cat", answer: "Ek Tha Tiger" },
+      { points: 500, question: "This luxury fashion brand, whose logo features a panther, was popularized globally through high-end jewelry and watches", answer: "Cartier" },
+    ],
+    "Badly Written Movie Plots": [
+      { points: 100, question: "A man who has never met a vegetable he didn\u2019t like, somehow becomes a war hero, a ping pong champion, and a shrimping entrepreneur \u2014 all while waiting on a bench to tell strangers about his mother\u2019s thoughts on confectionery", answer: "Forrest Gump" },
+      { points: 200, question: "Four strangers are forced to live together. One of them cannot speak, which turns out to be the least of their problems. They accidentally see something they should not have seen and instead of doing anything sensible about it, they run around the same locations repeatedly, fall on each other, and scream. Nobody makes a single good decision for the entire runtime. Everything works out anyway.", answer: "Golmaal Fun Unlimited" },
+      { points: 300, question: "Three boys do not want to study. One of them is very smart but pretends he is not smart. The other two are not smart but pretend they are fine with this. A baby is born at the end for some reason. Everyone passes their exams.", answer: "3 Idiots" },
+      { points: 400, question: "A man who was once accused of being a traitor returns to public life by volunteering to coach a group of people who cannot stand each other, cannot stand him, and frankly cannot stand themselves. His entire coaching strategy appears to be making everyone so miserable that they have no choice but to bond. They go to a big tournament. They win.", answer: "Chak De India" },
+      { points: 500, question: "A very rich man\u2019s son grows up thinking the best way to get his dad\u2019s attention is by becoming increasingly unhinged. He falls in love, gets married, but also treats relationships like optional side quests. There are guns, shouting, long monologues, and a lot of people wondering why no one suggested therapy earlier.", answer: "Animal" },
+    ],
+  }
+};
+</script>
+
+<!-- ============== HOME SCREEN ============== -->
+<div id="home">
+  <h1>Jeopardy!</h1>
+  <div class="team-inputs">
+    <label>Team 1 <input type="text" id="team-name-0" placeholder="Enter team name"></label>
+    <label>Team 2 <input type="text" id="team-name-1" placeholder="Enter team name"></label>
+    <label>Team 3 <input type="text" id="team-name-2" placeholder="Enter team name"></label>
+    <label>Team 4 <input type="text" id="team-name-3" placeholder="Enter team name"></label>
+  </div>
+  <div class="home-buttons">
+    <button class="home-btn" onclick="startGame('board1')">Board 1</button>
+    <button class="home-btn" onclick="startGame('board2')">Board 2</button>
+  </div>
+</div>
+
+<!-- ============== BOARD SCREEN ============== -->
+<div id="board-screen">
+  <div class="board-header">
+    <h2 id="board-title">Board 1</h2>
+    <div class="header-right">
+      <a class="scores-link" onclick="showScoreboard()">View Scores</a>
+      <button class="back-btn" onclick="goHome()">Back</button>
+    </div>
+  </div>
+  <div class="turn-indicator" id="turn-indicator"></div>
+  <div class="board" id="board"></div>
+</div>
+
+<!-- ============== QUESTION OVERLAY ============== -->
+<div id="overlay">
+  <div id="pass-banner"></div>
+  <div class="turn-label" id="overlay-turn"></div>
+  <div class="category-label" id="overlay-category"></div>
+  <div class="points-label" id="overlay-points"></div>
+  <div class="question-text" id="overlay-question"></div>
+
+  <!-- Pre-reveal: Reveal Answer + Pass On -->
+  <div class="overlay-button-row" id="pre-reveal-row">
+    <button class="overlay-btn btn-reveal" id="reveal-btn" onclick="revealAnswer()">Reveal Answer</button>
+    <button class="overlay-btn btn-pass" id="pass-btn" onclick="passOn()">Pass On +1</button>
+  </div>
+
+  <div class="answer-text" id="overlay-answer"></div>
+
+  <!-- Post-reveal: Got it right / Nope -->
+  <div class="overlay-button-row hidden" id="result-row">
+    <button class="overlay-btn btn-correct" onclick="handleCorrect()">Got it right</button>
+    <button class="overlay-btn btn-wrong" onclick="handleWrong()">Nope</button>
+  </div>
+
+  <!-- Post-nope: Pass On to next team -->
+  <div class="overlay-button-row hidden" id="post-nope-row">
+    <button class="overlay-btn btn-pass" id="post-nope-pass-btn" onclick="passOn()">Pass On +2</button>
+  </div>
+</div>
+
+<!-- ============== SCOREBOARD SCREEN ============== -->
+<div id="scoreboard-screen">
+  <h2>Scores</h2>
+  <div class="score-cards" id="score-cards"></div>
+  <button id="scoreboard-back" onclick="hideScoreboard()">Back to Game</button>
+</div>
+
+<script>
+const POINT_VALUES = [100, 200, 300, 400, 500];
+
+let teamNames = ["Team 1", "Team 2", "Team 3", "Team 4"];
+let scores = [0, 0, 0, 0];
+let questionsAnswered = 0;
+let currentBoard = null;
+let visited = { board1: new Set(), board2: new Set() };
+
+// Pass-on state for the current question
+let basePoints = 0;
+let passCount = 0;
+let answeringTeam = 0;
+let teamsAttempted = new Set();
+
+function currentTeamIndex() {
+  return questionsAnswered % 4;
+}
+
+function currentTeamName() {
+  return teamNames[currentTeamIndex()];
+}
+
+function readTeamNames() {
+  for (let i = 0; i < 4; i++) {
+    const val = document.getElementById('team-name-' + i).value.trim();
+    if (val) teamNames[i] = val;
+  }
+}
+
+function startGame(boardKey) {
+  readTeamNames();
+  currentBoard = boardKey;
+  document.getElementById('home').style.display = 'none';
+  document.getElementById('board-screen').style.display = 'flex';
+  document.getElementById('board-title').textContent = boardKey === 'board1' ? 'Board 1' : 'Board 2';
+  renderBoard();
+  updateTurnIndicator();
+}
+
+function goHome() {
+  document.getElementById('home').style.display = 'flex';
+  document.getElementById('board-screen').style.display = 'none';
+}
+
+function updateTurnIndicator() {
+  document.getElementById('turn-indicator').innerHTML =
+    '<span>' + currentTeamName() + '\'s turn</span>';
+}
+
+function getCategories() {
+  return Object.keys(GAME_DATA[currentBoard]);
+}
+
+function renderBoard() {
+  const board = document.getElementById('board');
+  const categories = getCategories();
+  board.innerHTML = '';
+
+  categories.forEach(function(cat) {
+    const header = document.createElement('div');
+    header.className = 'category-header';
+    header.textContent = cat;
+    board.appendChild(header);
+  });
+
+  for (let row = 0; row < 5; row++) {
+    categories.forEach(function(cat, col) {
+      const tile = document.createElement('div');
+      const tileKey = col + '-' + row;
+      tile.className = 'tile' + (visited[currentBoard].has(tileKey) ? ' visited' : '');
+      tile.textContent = '$' + POINT_VALUES[row];
+      tile.onclick = function() { openQuestion(cat, row, tileKey); };
+      board.appendChild(tile);
+    });
+  }
+}
+
+function encodePath(p) {
+  return p.split('/').map(function(seg) { return seg.replace(/ /g, '%20'); }).join('/');
+}
+
+function renderQuestionContent(text, image) {
+  const match = text.match(/^Load image:\s*(.+)$/i);
+  if (match) {
+    return '<img src="' + encodePath(match[1].trim()) + '" alt="Question image">';
+  }
+  let html = text;
+  if (image) {
+    html += '<img src="' + encodePath(image) + '" alt="Question image" style="margin-top:24px;">';
+  }
+  return html;
+}
+
+function findNextTeam() {
+  // Find next team in rotation after answeringTeam that hasn't attempted
+  for (let i = 1; i <= 4; i++) {
+    const candidate = (answeringTeam + i) % 4;
+    if (!teamsAttempted.has(candidate)) return candidate;
+  }
+  return -1; // everyone has attempted
+}
+
+function hasMoreTeams() {
+  return teamsAttempted.size < 4 && findNextTeam() !== -1;
+}
+
+function updatePassButton() {
+  const passBtn = document.getElementById('pass-btn');
+  const nextPass = passCount + 1;
+  if (hasMoreTeams()) {
+    passBtn.style.display = '';
+    passBtn.textContent = 'Pass On +' + nextPass;
+  } else {
+    passBtn.style.display = 'none';
+  }
+}
+
+function updateBanner() {
+  const banner = document.getElementById('pass-banner');
+  if (passCount > 0) {
+    const bonus = passCount * 100;
+    banner.textContent = teamNames[answeringTeam] + ' answering \u2014 correct = $' + basePoints + ' + $' + bonus + ' bonus';
+    banner.classList.add('visible');
+  } else {
+    banner.classList.remove('visible');
+  }
+}
+
+function showPreReveal() {
+  document.getElementById('pre-reveal-row').classList.remove('hidden');
+  document.getElementById('result-row').classList.add('hidden');
+  document.getElementById('post-nope-row').classList.add('hidden');
+  document.getElementById('overlay-answer').classList.remove('visible');
+  document.getElementById('overlay').classList.remove('answer-shown');
+  updatePassButton();
+}
+
+function openQuestion(category, row, tileKey) {
+  if (visited[currentBoard].has(tileKey)) return;
+
+  const qData = GAME_DATA[currentBoard][category][row];
+  basePoints = qData.points;
+  passCount = 0;
+  answeringTeam = currentTeamIndex();
+  teamsAttempted = new Set();
+
+  document.getElementById('overlay-turn').textContent = teamNames[answeringTeam] + '\'s turn';
+  document.getElementById('overlay-category').textContent = category;
+  document.getElementById('overlay-points').textContent = '$' + qData.points;
+  document.getElementById('overlay-question').innerHTML = renderQuestionContent(qData.question, qData.image);
+  document.getElementById('overlay-answer').textContent = qData.answer;
+
+  updateBanner();
+  showPreReveal();
+  document.getElementById('overlay').classList.add('active');
+
+  visited[currentBoard].add(tileKey);
+  renderBoard();
+}
+
+function passOn() {
+  // Mark current answering team as attempted
+  teamsAttempted.add(answeringTeam);
+  passCount++;
+
+  // Move to next team
+  answeringTeam = findNextTeam();
+
+  // Update UI for new team
+  document.getElementById('overlay-turn').textContent = teamNames[answeringTeam] + '\'s turn';
+  updateBanner();
+  showPreReveal();
+}
+
+function revealAnswer() {
+  document.getElementById('overlay-answer').classList.add('visible');
+  document.getElementById('overlay').classList.add('answer-shown');
+  document.getElementById('pre-reveal-row').classList.add('hidden');
+  document.getElementById('result-row').classList.remove('hidden');
+  document.getElementById('post-nope-row').classList.add('hidden');
+}
+
+function handleCorrect() {
+  const award = basePoints + (passCount * 100);
+  scores[answeringTeam] += award;
+  closeAndAdvance();
+}
+
+function handleWrong() {
+  // Mark this team as attempted
+  teamsAttempted.add(answeringTeam);
+
+  document.getElementById('result-row').classList.add('hidden');
+
+  if (hasMoreTeams()) {
+    // Show post-nope pass button
+    const nextPass = passCount + 1;
+    document.getElementById('post-nope-pass-btn').textContent = 'Pass On +' + nextPass;
+    document.getElementById('post-nope-row').classList.remove('hidden');
+  } else {
+    // Everyone has tried, no points awarded
+    closeAndAdvance();
+  }
+}
+
+function closeAndAdvance() {
+  questionsAnswered++;
+  document.getElementById('overlay').classList.remove('active');
+  document.getElementById('overlay').classList.remove('answer-shown');
+  document.getElementById('pass-banner').classList.remove('visible');
+  updateTurnIndicator();
+}
+
+function showScoreboard() {
+  const container = document.getElementById('score-cards');
+  container.innerHTML = '';
+  const turn = currentTeamIndex();
+
+  for (let i = 0; i < 4; i++) {
+    const card = document.createElement('div');
+    card.className = 'score-card' + (i === turn ? ' current-turn' : '');
+    card.innerHTML =
+      '<div class="card-name">' + teamNames[i] + '</div>' +
+      '<div class="card-score">' + scores[i] + '</div>' +
+      '<div class="card-turn">Up next</div>';
+    container.appendChild(card);
+  }
+
+  document.getElementById('scoreboard-screen').classList.add('active');
+}
+
+function hideScoreboard() {
+  document.getElementById('scoreboard-screen').classList.remove('active');
+}
+</script>
+</body>
+</html>
